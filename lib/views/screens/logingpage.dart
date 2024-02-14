@@ -1,4 +1,7 @@
+import 'package:firebase/controll/firebase_auth_service.dart';
 import 'package:firebase/views/Textwidget/Text.dart';
+import 'package:firebase/views/screens/user_detiles.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +14,11 @@ class Loginpage extends StatefulWidget {
 }
 
 class _LoginpageState extends State<Loginpage> {
+  final FirebaseAuthService _auth =FirebaseAuthService();
+
+  TextEditingController _userEmailController = TextEditingController();
+   TextEditingController _userPasswordController = TextEditingController();
+    TextEditingController _userNameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
      
@@ -38,6 +46,7 @@ title:
                   height: 20,
                 ),
                 TextField(
+                   controller: _userNameController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Enter Name',
@@ -45,6 +54,7 @@ title:
                 ),
                 SizedBox(height: 15,),
  TextField(
+    controller: _userEmailController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Email id',
@@ -52,10 +62,29 @@ title:
                 ),
                     SizedBox(height: 15,),
  TextField(
+    controller: _userPasswordController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'password',
                   ),
+                ),
+                 SizedBox(height: 15),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: 
+                     (){
+                         _signIn(context);
+                     },
+                      
+                      child: Text("Login"),
+                    ),
+                    SizedBox(width: 15),
+                    ElevatedButton(
+                      onPressed: _clearFields,
+                      child: Text("CLEAR"),
+                    ),
+                  ],
                 ),
               ]
 ),
@@ -65,4 +94,31 @@ title:
 )
 );
   }
+
+
+void _signIn(BuildContext context) async {
+  String email = _userEmailController.text;
+  String password = _userPasswordController.text;
+
+  Object? user = await _auth.loginWithEmailAndPassword(email, password);
+
+  if (user != null) {
+    print('Login Successful');
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => userdetiles()),
+    );
+  } else {
+    print('Login Failed');
+    // Display error message or dialog
+  }
+}
+
+
+ void _clearFields() {
+    _userNameController.text = '';
+    _userEmailController.text = '';
+    _userPasswordController.text = '';
+   
+  }
+
 }

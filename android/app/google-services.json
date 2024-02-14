@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "120864914709",
+    "project_id": "empoyee-management-e512e",
+    "storage_bucket": "empoyee-management-e512e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120864914709:android:4f9110e6da6c4393027d1c",
+        "android_client_info": {
+          "package_name": "com.example.firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNjNOEcmMstJ5VGmnWreYw16xbdHDw5w8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
