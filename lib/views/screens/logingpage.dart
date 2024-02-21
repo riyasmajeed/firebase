@@ -73,9 +73,9 @@ title:
                   children: [
                     ElevatedButton(
                       onPressed: 
-                     (){
-                         _signIn(context);
-                     },
+                       () => signIn(context),
+                       
+                     
                       
                       child: Text("Login"),
                     ),
@@ -96,13 +96,18 @@ title:
   }
 
 
-void _signIn(BuildContext context) async {
+void signIn(BuildContext context) async {
   String email = _userEmailController.text;
   String password = _userPasswordController.text;
 
   Object? user = await _auth.loginWithEmailAndPassword(email, password);
 
   if (user != null) {
+     ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("User created successfully"),
+      ),
+    );
     print('Login Successful');
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => userdetiles()),
