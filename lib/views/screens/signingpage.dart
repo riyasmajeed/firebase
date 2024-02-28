@@ -1,10 +1,9 @@
-
 import 'package:firebase/controll/firebase_auth_service.dart';
+import 'package:firebase/views/Textwidget/Text.dart';
 import 'package:firebase/views/screens/logingpage.dart';
 import 'package:firebase/views/screens/user_detiles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 
 class SigningPage extends StatefulWidget {
   const SigningPage({Key? key}) : super(key: key);
@@ -41,106 +40,134 @@ class _SigningPageState extends State<SigningPage> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          // App bar configuration...
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            ),
+          ),
+          backgroundColor: Colors.cyan,
+          centerTitle: true,
+          title: title,
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "CREATE ACCOUNT",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 20),
-                TextField(
-                  controller: _userNameController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter Name',
-                    errorText: _validateName ? 'Name can\'t be empty' : null,
+        body: Container(
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(colors: [
+            Color(0xff881736),
+            Color(0xff281537),
+          ])),
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "CREATE ACCOUNT",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                ),
-                SizedBox(height: 15),
-                TextField(
-                  controller: _userEmailController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Email id',
-                    errorText: _validateEmail ? 'Email can\'t be empty' : null,
-                  ),
-                ),
-                SizedBox(height: 15),
-                TextField(
-                  controller: _userPasswordController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Password',
-                    errorText:
-                        _validatePassword ? 'Password can\'t be empty' : null,
-                  ),
-                  obscureText: true, // Secure text entry
-                ),
-                SizedBox(height: 15),
-                TextField(
-                  controller: _userConfirmPasswordController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Confirm password',
-                    errorText: _validateConfirmPassword
-                        ? 'Confirm password can\'t be empty'
-                        : null,
-                  ),
-                  obscureText: true, // Secure text entry
-                ),
-                SizedBox(height: 15),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: _isSigning ? null : () => _signUp(context),
-                      child: Text("CREATE"),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _userNameController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white)),
+                      hintText: 'Enter Name',
+                      errorText: _validateName ? 'Name can\'t be empty' : null,
                     ),
-                    SizedBox(width: 15),
-                    ElevatedButton(
-                      onPressed: _clearFields,
-                      child: Text("CLEAR"),
+                  ),
+                  SizedBox(height: 15),
+                  TextField(
+                    controller: _userEmailController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
+                      hintText: 'Email id',
+                      errorText:
+                          _validateEmail ? 'Email can\'t be empty' : null,
                     ),
-                  ],
-                ),
-                SizedBox(height: 135),
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => Loginpage()),
-                    );
-                  },
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          "Do you have an account?",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                  ),
+                  SizedBox(height: 15),
+                  TextField(
+                    controller: _userPasswordController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
+                      hintText: 'Password',
+                      errorText:
+                          _validatePassword ? 'Password can\'t be empty' : null,
+                    ),
+                    obscureText: true, // Secure text entry
+                  ),
+                  SizedBox(height: 15),
+                  TextField(
+                    controller: _userConfirmPasswordController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
+                      hintText: 'Confirm password',
+                      errorText: _validateConfirmPassword
+                          ? 'Confirm password can\'t be empty'
+                          : null,
+                    ),
+                    obscureText: true, // Secure text entry
+                  ),
+                  SizedBox(height: 15),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: _isSigning ? null : () => _signUp(context),
+                        child: Text("CREATE"),
+                      ),
+                      SizedBox(width: 15),
+                      ElevatedButton(
+                        onPressed: _clearFields,
+                        child: Text("CLEAR"),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 132),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => Loginpage()),
+                      );
+                    },
+                    child: const Align(
+                      alignment: Alignment.bottomRight,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            "Do you have an account?",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Text(
-                          "Login",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17,
-                            color: Colors.black,
-                          ),
-                        )
-                      ],
+                          Text(
+                            "Login",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                              color: Colors.white,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -175,7 +202,7 @@ class _SigningPageState extends State<SigningPage> {
     if (user != null) {
       _showSuccessSnackBar('User created successfully');
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => userdetiles()),
+        MaterialPageRoute(builder: (context) => UserDetailsScreen()),
       );
     } else {
       showDialog(

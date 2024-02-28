@@ -3,13 +3,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirestoreService {
   // Get collection of notes
   final CollectionReference notes =
-      FirebaseFirestore.instance.collection('note');
+      FirebaseFirestore.instance.collection('users');
 
   // Create and add a new note
-  Future<void> addNote(String note) {
+  Future<void> addNote(String note,String age,String Designation,String Gender,String City,String imageUrl) {
     return notes.add({
       'note': note,
       'timestamp': Timestamp.now(),
+        'age':age ,
+        'Designation':Designation,
+        'Gender':Gender,
+        'City': City,
+        'image':imageUrl,
     });
   }
 
@@ -22,10 +27,17 @@ class FirestoreService {
   }
 
   // Update note given a doc id
-  Future<void> updateNote(String docID, String newNote) {
+  Future<void> updateNote(String docID, 
+   String note, String age,String Designation,String Gender,String City, 
+  ) {
     return notes.doc(docID).update({
-      'note': newNote,
-      'timestamp': Timestamp.now(),
+       'note': note,
+       'timestamp': Timestamp.now(),
+       'age':age,
+         'Designation':Designation,
+         'Gender':Gender,
+         'City': City,
+
     });
   }
 
@@ -33,4 +45,6 @@ class FirestoreService {
   Future<void> deleteNote(String docID) {
     return notes.doc(docID).delete();
   }
+
+ 
 }

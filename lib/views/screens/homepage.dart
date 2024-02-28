@@ -40,13 +40,13 @@ home: Scaffold(
         // border: Border.all(width: 2,color: Colors.black)
         
       ),
-      child: Center(
+      child: const Center(
         child: Text("Signing page",style: TextStyle(color: Colors.black),),
       ),
      )
      
      ),
-     SizedBox(height: 20,),
+     const SizedBox(height: 20,),
      
      ElevatedButton(onPressed: (){
         Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext)=>Loginpage()));
