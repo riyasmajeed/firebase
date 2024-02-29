@@ -15,6 +15,10 @@ class UserDetailsScreen extends StatefulWidget {
 class _UserDetailsScreenState extends State<UserDetailsScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  String _imageUrl = '';
+  File? _imageFile;
+  String _oldImageUrl = '';
+
   showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -38,7 +42,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     TextEditingController cityController =
         TextEditingController(text: userData?['city']);
 
-    String imageUrl = userData?['imageUrl'] ?? "";
+    _oldImageUrl = userData?['imageUrl'] ?? '';
 
     showDialog(
       context: context,
@@ -118,39 +122,23 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                       hintText: 'Enter City',
                     ),
                   ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+                      if (pickedFile == null) return;
+
+                      setState(() {
+                        _imageFile = File(pickedFile.path);
+                      });
+                    },
+                    child: Text('Pick Image'),
+                  ),
                 ],
               ),
             ),
           ),
           actions: <Widget>[
-            IconButton(
-              onPressed: () async {
-                final pickedFile =
-                    await ImagePicker().pickImage(source: ImageSource.gallery);
-                if (pickedFile == null) return;
-
-                String fileName =
-                    DateTime.now().millisecondsSinceEpoch.toString(); // Using milliseconds for a more unique filename
-
-                Reference referenceRoot = FirebaseStorage.instance.ref();
-                Reference referenceDireImage = referenceRoot.child('image');
-
-                // Create reference for the image to be stored
-                Reference referenceImageToUpload =
-                    referenceDireImage.child(fileName);
-
-                // Upload the image
-                try {
-                  await referenceImageToUpload.putFile(File(pickedFile.path));
-                  // Handle success here if needed
-                  imageUrl =
-                      await referenceImageToUpload.getDownloadURL();
-                } catch (e) {
-                  // Handle errors here
-                }
-              },
-              icon: const Icon(Icons.camera_alt),
-            ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
@@ -159,38 +147,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  if (docID == null) {
-                    usersCollection.add({
-                      'name': nameController.text,
-                      'age': ageController.text,
-                      'designation': designationController.text,
-                      'gender': genderController.text,
-                      'city': cityController.text,
-                      'imageUrl': imageUrl, // Add imageUrl to Firestore
-                    }).then((_) {
-                      showSuccessSnackBar('User Added Successfully');
-                    });
-                  } else {
-                    usersCollection.doc(docID).update({
-                      'name': nameController.text,
-                      'age': ageController.text,
-                      'designation': designationController.text,
-                      'gender': genderController.text,
-                      'city': cityController.text,
-                      'imageUrl': imageUrl, // Update imageUrl in Firestore
-                    }).then((_) {
-                      showSuccessSnackBar(
-                          'User Details Updated Successfully');
-                    });
-                  }
-                  nameController.clear();
-                  ageController.clear();
-                  designationController.clear();
-                  genderController.clear();
-                  cityController.clear();
-                  Navigator.of(context).pop();
-                }
+                _submitForm(docID, nameController, ageController, designationController, genderController, cityController);
               },
               child: Text(docID == null ? 'Add' : 'Update'),
             ),
@@ -198,6 +155,58 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         );
       },
     );
+  }
+
+  void _submitForm(String? docID, TextEditingController nameController, TextEditingController ageController, TextEditingController designationController, TextEditingController genderController, TextEditingController cityController) async {
+    if (_formKey.currentState!.validate()) {
+      if (_imageFile != null) {
+        try {
+          Reference ref = FirebaseStorage.instance
+              .ref()
+              .child('user_images')
+              .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+          await ref.putFile(_imageFile!);
+          _imageUrl = await ref.getDownloadURL();
+        } catch (e) {
+          print('Error uploading image: $e');
+        }
+      }
+
+      Map<String, dynamic> userData = {
+        'name': nameController.text,
+        'age': ageController.text,
+        'designation': designationController.text,
+        'gender': genderController.text,
+        'city': cityController.text,
+        'imageUrl': _imageUrl.isNotEmpty ? _imageUrl : _oldImageUrl,
+      };
+
+      if (docID == null) {
+        usersCollection.add(userData).then((_) {
+          showSuccessSnackBar('User Added Successfully');
+        });
+      } else {
+        usersCollection.doc(docID).update(userData).then((_) {
+          showSuccessSnackBar('User Details Updated Successfully');
+        });
+
+        // Delete old image if URL has changed
+        if (_oldImageUrl.isNotEmpty && _imageUrl != _oldImageUrl) {
+          try {
+            await FirebaseStorage.instance.refFromURL(_oldImageUrl).delete();
+          } catch (e) {
+            print('Error deleting old image: $e');
+          }
+        }
+      }
+
+      nameController.clear();
+      ageController.clear();
+      designationController.clear();
+      genderController.clear();
+      cityController.clear();
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -265,7 +274,12 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                                       child: const Text("Cancel"),
                                     ),
                                     TextButton(
-                                      onPressed: () {
+                                      onPressed: () async {
+                                        try {
+                                          await FirebaseStorage.instance.refFromURL(userData['imageUrl']).delete();
+                                        } catch (e) {
+                                          print('Error deleting image: $e');
+                                        }
                                         usersCollection.doc(docID).delete();
                                         Navigator.of(context).pop();
                                       },
@@ -296,4 +310,3 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     );
   }
 }
-
